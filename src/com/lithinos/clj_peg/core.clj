@@ -7,19 +7,7 @@
 ;   You must not remove this notice, or any other, from this software.
 
 (ns com.lithinos.clj-peg.core
-    (:import (com.lithinos.clj_peg PegError CyclicalError)))
-
-(gen-interface
- :name com.lithinos.clj_peg.IWrapper
- :methods [
-    [consume        [Object]    Object]
-    [context        []          Object]
-    [fail           [Throwable] Boolean]
-    [getMark        []          Object]
-    [isEmpty        []          Boolean]
-    [returnToMark   [Object]    Boolean]
-    [test           [Object]    Boolean]
-    ])
+    (:import (com.lithinos.clj_peg PegError CyclicalError IWrapper)))
 
 (use '(com.lithinos.clj-peg string-wrapper))    
 

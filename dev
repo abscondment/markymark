@@ -1,0 +1,9 @@
+#!/bin/sh
+
+EXT="$(find -H lib -mindepth 1 -maxdepth 1 -print0 | tr \\0 \:)src:classes"
+if [ -n "${CLASSPATH:-}" ]; then
+    export CLASSPATH="$EXT$CLASSPATH"
+else
+    export CLASSPATH="${EXT%:}"
+fi
+clj src/markymark.clj

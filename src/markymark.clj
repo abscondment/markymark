@@ -27,10 +27,47 @@
                              Sp
                              Newline
                              (+ BlankLine)]
-          Heading        <- Plain ;;;;;;;;;;;;;;; TODO
-          Para           <- [NonindentSpace Plain (+ BlankLine)]
-          Plain          <- #".+"
+          Heading        <- (| AtxHeading SetextHeading)
+          
+          Para           <- [NonindentSpace Inlines (+ BlankLine)]
+          Plain          <- Inline
 
+
+          Inline         <- #".+"
+          Inlines        <- (+ Inline)
+
+
+          
+
+          SetextHeading  <- (| SetextHeadingE
+                               SetextHeadingD)
+          SetextHeadingE <- [(+ [(! EndLine) Inline])
+                             Newline
+                             EqThree
+                             (* EqOne)
+                             Newline]
+          SetextHeadingD <- [(+ [(! EndLine) Inline])
+                             Newline
+                             DashThree
+                             (* Dash)
+                             Newline]
+          
+          NumOne         <- "#"
+          NumTwo         <- "##"
+          NumThree       <- "###"
+          NumFour        <- "####"
+          NumFive        <- "#####"
+          NumSix         <- "######"
+          AtxStart       <- (| NumSix NumFive NumFour NumThree NumTwo NumOne)
+          AtxInline      <- [(! Newline)
+                             (! [Sp (* NumOne) Newline])
+                             Inline]
+          AtxHeading     <- [AtxStart
+                             Sp
+                             (+ AtxInline)
+                             (? [Sp (* NumOne) Sp])
+                             Newline]
+           
           Space          <- " "
           Tab            <- "\t"
           Spacechar      <- (| Space Tab)
@@ -46,7 +83,25 @@
           AST            <- "*"
           Dash           <- "-"
           UND            <- "_"
-
+          EqOne          <- "="
+          EqThree        <- "==="
+          DashThree      <- "---"
+          
+          NormalEndline  <- [Sp
+                             Newline
+                             (! BlankLine)
+                             (! GT)
+                             (! AtxStart)
+                             (! [Line
+                                 (| [EqThree (* EqOne)]
+                                    [DashThree (* Dash)])
+                                 Newline])]
+          TerminalEndline <- [Sp Newline $]
+          LineBreak      <- [SpTwo NormalEndline]
+          EndLine        <- (| LineBreak
+                               TerminalEndline
+                               NormalEndline)
+          
           NL             <- "\n"
           CR             <- "\r"
           Newline        <- (| NL [CR (? NL)])
@@ -77,14 +132,12 @@ OK?")))))
  (pprint
   (markdown
    (wrap-string "
-> Get that man a *drink*.
-> > kewl
-> FYE
+# DAH
 
-    worry
-    deeds
+## Uan
 
-**************
+MAN!
+=====
 
 OK?
 "))))
